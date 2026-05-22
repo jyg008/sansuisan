@@ -5,8 +5,7 @@ on:
     branches:
       - main
   schedule:
-        # Runs everyday at 1:00 AM
-        - cron: "0 1 * * *"
+    - cron: "0 1 * * *"
 
 permissions:
   contents: write
@@ -22,31 +21,21 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "latest"
+          node-version: "20"
 
-      - name: Install dependencies
+      - name: Clone BPB Worker Panel
         run: |
-          npm install -g javascript-obfuscator
+          git clone --depth=1 https://github.com/bia-pain-bache/BPB-Worker-Panel.git bpb-temp
 
-      - name: Clone BPB workjs
+      - name: Install dependencies and build
         run: |
-          wget -O origin.js https://raw.githubusercontent.com/bia-pain-bache/BPB-Worker-Panel/main/build/unobfuscated-worker.js || curl -L -o origin.js https://raw.githubusercontent.com/bia-pain-bache/BPB-Worker-Panel/main/build/unobfuscated-worker.js
-      
-      - name: Obfuscate BPB worker js
+          cd bpb-temp
+          npm install
+          npm run build
+
+      - name: Copy built worker
         run: |
-          javascript-obfuscator origin.js --output _worker.js \
-          --compact true \
-          --control-flow-flattening true \
-          --control-flow-flattening-threshold 1 \
-          --dead-code-injection true \
-          --dead-code-injection-threshold 1 \
-          --identifier-names-generator hexadecimal \
-          --rename-globals true \
-          --string-array true \
-          --string-array-encoding 'rc4' \
-          --string-array-threshold 1 \
-          --transform-object-keys true \
-          --unicode-escape-sequence true
+          cp bpb-temp/_worker.js ./_worker.js
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
