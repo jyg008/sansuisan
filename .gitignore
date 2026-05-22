@@ -17,7 +17,6 @@ build/
 .DS_Store
 Thumbs.db
 
-# Generated files
+# Generated files (removed _worker.js to allow commit)
 origin.js
-_worker.js
 worker.zip
