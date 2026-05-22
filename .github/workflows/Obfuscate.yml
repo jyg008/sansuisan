@@ -33,9 +33,12 @@ jobs:
           npm install
           npm run build
 
-      - name: Copy built worker
+      - name: Extract and copy built worker
         run: |
-          cp bpb-temp/_worker.js ./_worker.js
+          cd bpb-temp
+          unzip -o dist/worker.zip -d ../
+          cd ..
+          rm -rf bpb-temp
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
